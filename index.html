@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Questionário de Altas Habilidades/Superdotação – Pais</title>
+<style>
+:root{
+  --bg:#0f172a;--card:#111827;--line:#1f2937;
+  --text:#e5e7eb;--muted:#94a3b8;
+  --pri:#4f46e5;--ok:#22c55e;--err:#ef4444
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto}
+.wrap{max-width:1000px;margin:24px auto;padding:0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+h1{margin:0 0 6px;font-size:1.25rem}
+.muted{color:var(--muted)}
+.grid-info{display:grid;gap:10px;grid-template-columns:1fr 1fr;margin:14px 0}
+@media(max-width:720px){.grid-info{grid-template-columns:1fr}}
+.info{background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:10px}
+.info b{display:block;color:#cbd5e1;margin-bottom:4px}
+.q{border:1px solid var(--line);border-radius:12px;background:#0b1220;padding:12px;margin-bottom:10px}
+.q h3{margin:0 0 6px;font-size:.95rem}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+label.opt{display:flex;align-items:center;gap:6px;background:#111827;border:1px solid #1f2937;border-radius:9px;padding:6px 10px;cursor:pointer}
+label.opt:has(input[type="radio"]:checked){background:var(--pri);border-color:var(--pri);color:#fff}
+label.opt span{color:inherit}
+label.opt:has(input[type="radio"]:checked) span{font-weight:600}
+label.opt input{accent-color:var(--pri)}
+input[type="text"],textarea{
+  width:100%;background:#0f172a;border:1px solid #1f2937;
+  border-radius:8px;padding:6px 8px;color:#fff
+}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--ok);border:none;border-radius:10px;
+  color:#fff;padding:10px 14px;cursor:pointer
+}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.msg{margin:10px 0;padding:10px;border-radius:8px}
+.okbox{background:#052e1a;border:1px solid #114d2a;color:#b3f7c1}
+.errbox{background:#3b0d0d;border:1px solid #5b1919;color:#ffd0d0}
+.warnbox{background:#3a2903;border:1px solid #5c4307;color:#ffe6b0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Questionário de Altas Habilidades/Superdotação – Pais</h1>
+    
+
+    <div id="pacInfo" class="grid-info" style="display:none;"></div>
+
+    <form id="form" style="display:none;">
+      <div id="qs"></div>
+      <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <button id="btnSubmit" class="btn" type="submit">Enviar respostas</button>
+        <div id="progress" class="muted"></div>
+      </div>
+      <div id="msg" class="msg" style="display:none"></div>
+    </form>
+
+    <div id="alert" class="msg" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+// ========= CONFIG GERAL =========
+const SHEETDB_BASE = "https://sheetdb.io/api/v1/8pmdh33s9fvy8";
+const SHEETS = {
+  PATIENTS: "Patients",
+  TOKENS: "LinkTokens",
+  SCORES: "Scores_QIIAHSD_PAIS_CRIANCA"
+};
+const CODE = "QIIAHSD_PAIS_CRIANCA";
+const PORTAL_URL = "https://integradaneuropsicologia.github.io/formularios/";
+
+const $ = s => document.querySelector(s);
+const onlyDigits = s => (s || "").replace(/\D+/g,"");
+const qs = k => new URLSearchParams(location.search).get(k) || "";
+const AUTOSAVE_KEY = `${CODE}_${qs("token") || "no_token"}`;
+
+function setBox(id, text, kind="ok"){
+  const el = $(id); if(!el) return;
+  el.textContent = text;
+  el.className = "msg " + (kind==="ok" ? "okbox" : kind==="warn" ? "warnbox" : "errbox");
+  el.style.display = "block";
+}
+function hideBox(id){
+  const el = $(id);
+  if(el){ el.style.display="none"; el.textContent=""; }
+}
+function maskCPF(cpf){
+  const d = onlyDigits(cpf || "");
+  if(d.length !== 11) return cpf || "";
+  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`;
+}
+function fmtDateISO(iso){
+  if(!iso) return "";
+  const [y,m,d] = iso.split("-");
+  return (y && m && d) ? `${d}/${m}/${y}` : iso;
+}
+
+async function GET(url){
+  const r = await fetch(url);
+  if(!r.ok) throw new Error("HTTP "+r.status);
+  return r.json();
+}
+async function POST(url, body){
+  const r = await fetch(url,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function PATCH(url, body){
+  const r = await fetch(url,{
+    method:"PATCH",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function sheetSearch(sheet, params){
+  const usp = new URLSearchParams(params);
+  return GET(`${SHEETDB_BASE}/search?sheet=${encodeURIComponent(sheet)}&${usp.toString()}`);
+}
+async function sheetCreate(sheet, row){
+  return POST(`${SHEETDB_BASE}?sheet=${encodeURIComponent(sheet)}`, { data:[row] });
+}
+async function sheetPatchBy(sheet, col, val, data){
+  return PATCH(
+    `${SHEETDB_BASE}/${encodeURIComponent(col)}/${encodeURIComponent(val)}?sheet=${encodeURIComponent(sheet)}`,
+    { data }
+  );
+}
+function goPortalWithToken(){
+  const TOKEN = qs("token");
+  try{
+    const u = new URL(PORTAL_URL, location.href);
+    u.searchParams.set("token", TOKEN);
+    location.href = u.toString();
+  }catch(_){
+    const sep = PORTAL_URL.includes("?") ? "&" : "?";
+    location.href = PORTAL_URL + sep + "token=" + encodeURIComponent(TOKEN);
+  }
+}
+
+// ========= LISTA DE PERGUNTAS (1–188) =========
+// Texto puro; a numeração é adicionada na renderização.
+const QUESTIONS = [
+  "Você percebe que seu filho(a) tem habilidades especiais e costuma se destacar de outras crianças?",
+  "Seu filho(a) parece distraído e “viaja” com frequência, mesmo durante conversas ou atividades simples?",
+  "Seu filho(a) é muito atento(a), curioso(a) e demonstra interesse por aprender coisas novas?",
+  "Seu filho(a) já aprendeu a ler?",
+  "Seu filho(a) costuma ler espontaneamente livros, revistas ou conteúdos de seu interesse?",
+  "Seu filho(a) já escreve com letra de forma (impressa)?",
+  "Seu filho(a) já escreve com letra cursiva (manuscrita)?",
+  "Seu filho(a) faz perguntas provocativas ou complexas, tentando entender coisas em profundidade?",
+  "Seu filho(a) prefere brincar sozinho(a) em vez de estar com outras crianças?",
+  "Seu filho(a) gosta de ler ou ver conteúdos mais difíceis do que o esperado para a idade?",
+  "Seu filho(a) costuma ser independente e faz as coisas sozinho(a)?",
+  "Seu filho(a) é brincalhão, tem bom humor e faz os outros rirem?",
+  "Seu filho(a) demonstra preocupação com assuntos “de adultos”, como injustiças, pobreza ou meio ambiente?",
+  "Seu filho(a) é perfeccionista e se cobra muito para fazer tudo certo?",
+  "Seu filho(a) observa detalhes que passam despercebidos pelos outros?",
+  "Seu filho(a) gosta de jogos de montar, quebra-cabeças, xadrez ou desafios de lógica?",
+  "Seu filho(a) tem memória excepcional, especialmente para temas que o interessam?",
+  "Seu filho(a) acumula muitas informações sobre os assuntos que gosta?",
+  "Seu filho(a) usa palavras difíceis ou tem vocabulário acima da média para a idade?",
+  "Seu filho(a) tenta entender assuntos complexos analisando cada parte com atenção?",
+  "Seu filho(a) aprende rapidamente o que o interessa e aplica o que aprendeu em outras situações?",
+  "Seu filho(a) percebe facilmente como as partes de algo se relacionam com o todo?",
+  "Seu filho(a) costuma entender mais de uma história, filme ou situação do que outras crianças da mesma idade?",
+  "Seu filho(a) faz perguntas inteligentes tentando descobrir o “como” e o “porquê” das coisas?",
+  "Seu filho(a) consegue se colocar no lugar dos outros, entendendo o que sentem?",
+  "Seu filho(a) aprende mais rápido que outras crianças?",
+  "Seu filho(a) se adapta facilmente a mudanças ou consegue transformar situações novas a seu favor?",
+  "Seu filho(a) lida bem com ideias abstratas e conceitos difíceis de entender?",
+  "As ideias de seu filho(a) costumam ser vistas como diferentes ou criativas pelos outros?",
+  "Seu filho(a) tem muitas ideias e soluções originais para os problemas?",
+  "Seu filho(a) gosta de correr riscos para conseguir algo que deseja?",
+  "Seu filho(a) gosta de desafios e de testar seus próprios limites?",
+  "Seu filho(a) é muito imaginativo e inventa histórias, brincadeiras ou soluções criativas?",
+  "Seu filho(a) é sensível às coisas bonitas, como músicas, paisagens ou obras de arte?",
+  "Seu filho(a) usa objetos ou materiais de maneiras diferentes das convencionais?",
+  "Seu filho(a) compreende e respeita opiniões diferentes das suas?",
+  "Seu filho(a) se irrita quando precisa repetir algo que já sabe fazer?",
+  "Seu filho(a) costuma encontrar formas diferentes e criativas de resolver problemas?",
+  "Seu filho(a) questiona o que os adultos dizem quando não concorda?",
+  "Seu filho(a) consegue manter a atenção mesmo em atividades que não são de seu interesse?",
+  "Seu filho(a) costuma dar um toque pessoal ou criativo ao que faz?",
+  "Seu filho(a) costuma respeitar regras e combinados?",
+  "Seu filho(a) dedica muito tempo e energia a atividades que realmente gosta?",
+  "Seu filho(a) é muito exigente consigo mesmo e raramente fica satisfeito com o que faz?",
+  "Seu filho(a) insiste em buscar soluções até conseguir resolver um problema?",
+  "Seu filho(a) tem sua própria forma de se organizar nas atividades e brinquedos?",
+  "Seu filho(a) é seguro(a) de suas opiniões e às vezes teimoso(a)?",
+  "Seu filho(a) precisa de muito incentivo para terminar atividades que gosta?",
+  "Seu filho(a) deixa de fazer outras coisas para se concentrar em algo que o interessa?",
+  "Seu filho(a) consegue prever dificuldades ou obstáculos antes de começar uma tarefa?",
+  "Seu filho(a) consegue estabelecer prioridades com facilidade?",
+  "Seu filho(a) costuma planejar o que vai fazer antes de começar?",
+  "Seu filho(a) é persistente e tenta concluir as tarefas que inicia?",
+  "Seu filho(a) é organizado e eficiente quando realiza algo que lhe interessa?",
+  "Seu filho(a) entende as consequências de suas ações?",
+  "Seu filho(a) é autossuficiente e gosta de fazer as coisas por conta própria?",
+  "Seu filho(a) costuma liderar ou influenciar outras crianças nas brincadeiras?",
+  "Seu filho(a) coopera e ajuda os outros com facilidade?",
+  "Seu filho(a) costuma organizar grupos ou brincadeiras?",
+  "Seu filho(a) se expressa bem e consegue convencer os outros com seus argumentos?",
+  "Seu filho(a) se destaca em algum esporte ou atividade física?",
+  "Seu filho(a) tem facilidade em esportes como futebol?",
+  "Seu filho(a) tem facilidade em ginástica ou acrobacias?",
+  "Seu filho(a) tem facilidade em artes marciais?",
+  "Seu filho(a) tem facilidade em natação?",
+  "Seu filho(a) tem facilidade em patinar ou andar de bicicleta?",
+  "Seu filho(a) demonstra talento em atividades artísticas?",
+  "Seu filho(a) desenha ou pinta muito bem?",
+  "Seu filho(a) gosta de modelar, esculpir ou criar objetos?",
+  "Seu filho(a) tem facilidade com música (tocar instrumentos, compor ou cantar)?",
+  "Seu filho(a) gosta de dançar e tem ritmo natural?",
+  "Seu filho(a) canta bem?",
+  "Seu filho(a) gosta de tirar fotos ou filmar cenas criativas?",
+  "Seu filho(a) gosta de teatro, representar personagens ou criar roteiros?",
+  "Seu filho(a) recita poesias, faz apresentações ou imita pessoas?",
+  "Seu filho(a) gosta de desenhar quadrinhos ou criar histórias ilustradas (como mangás)?",
+  "Seu filho(a) demonstra interesse por assuntos diferentes dos que atraem outras crianças?",
+  "Seu filho(a) tem senso de humor mais desenvolvido que o comum para a idade?",
+  "Seu filho(a) lê com entonação e interpretação, e/ou escreve com facilidade?",
+  "Seu filho(a) costuma levar em conta o ponto de vista dos outros?",
+  "Seu filho(a) prefere ficar sozinho(a) em vez de se misturar com outras crianças?",
+  "Seu filho(a) demonstra tédio ou desmotivação com atividades da escola?",
+  "Seu filho(a) demonstra talento lógico e matemático (números, estratégias, cálculos, jogos de lógica)?",
+  "Seu filho(a) demonstra talento em linguagem (leitura, escrita, contar histórias, aprender idiomas)?",
+  "Seu filho(a) demonstra facilidade para lidar com pessoas, ajudar colegas ou resolver conflitos?",
+  "Seu filho(a) se interessa por natureza, ciências, animais, planetas ou coleções?",
+  "Seu filho(a) gosta de atividades de movimento, como dançar, montar e desmontar objetos ou esportes?",
+  "Seu filho(a) demonstra boa consciência de si mesmo — entende o que sente e como reage às coisas?",
+  "Seu filho(a) gosta de construir coisas, montar quebra-cabeças, desenhar mapas ou brincar com labirintos?",
+  "Seu filho(a) tem sensibilidade musical — gosta de tocar, cantar ou inventar ritmos e melodias?",
+  "Seu filho(a) demonstra facilidade em alguma área específica do conhecimento?",
+  "Seu filho(a) se destaca em linguagem (português, leitura, escrita, idiomas)?",
+  "Seu filho(a) se destaca em ciências (física, biologia, química, experimentos)?",
+  "Seu filho(a) se destaca em matemática (raciocínio lógico, cálculos, números)?",
+  "Seu filho(a) demonstra interesse por história?",
+  "Seu filho(a) demonstra interesse por geografia (lugares, mapas, países)?",
+  "Seu filho(a) demonstra curiosidade por filosofia, perguntas existenciais ou temas abstratos?"
+];
+
+// Itens que são resposta aberta (não recebem Sim/Não obrigatório)
+const TEXT_ITEMS = new Set([]);
+
+// ========= RENDER =========
+function renderQuestions(){
+  const host = $("#qs");
+  host.innerHTML = "";
+  const N = QUESTIONS.length;
+
+  QUESTIONS.forEach((qtext, idx) => {
+    const n = idx + 1;
+    const qn = String(n).padStart(3,"0");
+    const wrap = document.createElement("div");
+    wrap.className = "q";
+    wrap.setAttribute("role","group");
+    wrap.setAttribute("aria-labelledby",`lbl${qn}`);
+
+    wrap.innerHTML = `<h3 id="lbl${qn}">${n}. ${qtext}</h3>`;
+
+    if(TEXT_ITEMS.has(n)){
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.name = `q${qn}`;
+      inp.placeholder = "Resposta aberta";
+      wrap.appendChild(inp);
+    }else{
+      const opts = document.createElement("div");
+      opts.className = "opts";
+      ["Sim","Não", "Não sei"].forEach((lab,i)=>{
+        const id = `q${qn}_${i}`;
+        const l = document.createElement("label");
+        l.className = "opt";
+        l.innerHTML =
+          `<input type="radio" name="q${qn}" id="${id}" value="${lab}" required>`+
+          `<span>${lab}</span>`;
+        opts.appendChild(l);
+      });
+      wrap.appendChild(opts);
+    }
+
+    host.appendChild(wrap);
+  });
+
+  const updateProg = () => {
+    let answered = 0;
+    for(let i=1;i<=N;i++){
+      const qn = String(i).padStart(3,"0");
+      if(TEXT_ITEMS.has(i)){
+        const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
+        if(v.trim() !== "") answered++;
+      }else{
+        if(document.querySelector(`input[name="q${qn}"]:checked`)) answered++;
+      }
+    }
+    $("#progress").textContent = `${answered}/${N} respondidas`;
+  };
+
+  host.addEventListener("input", () => { updateProg(); autosaveAnswers(); });
+  host.addEventListener("change", () => { updateProg(); autosaveAnswers(); });
+  updateProg();
+}
+
+// ========= AUTOSAVE =========
+function autosaveAnswers(){
+  const stored = {};
+  const N = QUESTIONS.length;
+  for(let i=1;i<=N;i++){
+    const qn = String(i).padStart(3,"0");
+    if(TEXT_ITEMS.has(i)){
+      const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
+      if(v !== "") stored[i] = v;
+    }else{
+      const sel = document.querySelector(`input[name="q${qn}"]:checked`);
+      if(sel) stored[i] = sel.value;
+    }
+  }
+  localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(stored));
+}
+function restoreAutosave(){
+  try{
+    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    if(!raw) return;
+    const data = JSON.parse(raw) || {};
+    Object.entries(data).forEach(([k,v])=>{
+      const n = Number(k);
+      const qn = String(n).padStart(3,"0");
+      if(TEXT_ITEMS.has(n)){
+        const inp = document.querySelector(`input[name="q${qn}"]`);
+        if(inp) inp.value = v;
+      }else{
+        const el = document.querySelector(`input[name="q${qn}"][value="${v}"]`);
+        if(el) el.checked = true;
+      }
+    });
+
+    const N = QUESTIONS.length;
+    let answered = 0;
+    for(let i=1;i<=N;i++){
+      const qn = String(i).padStart(3,"0");
+      if(TEXT_ITEMS.has(i)){
+        const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
+        if(v.trim() !== "") answered++;
+      }else if(document.querySelector(`input[name="q${qn}"]:checked`)){
+        answered++;
+      }
+    }
+    $("#progress").textContent = `${answered}/${N} respondidas`;
+  }catch(_){}
+}
+function clearAutosave(){
+  localStorage.removeItem(AUTOSAVE_KEY);
+}
+
+// ========= PACIENTE / TOKEN =========
+let patient = null;
+let CPF = "";
+let startAt = Date.now();
+
+(async function boot(){
+  try{
+    const TOKEN = qs("token");
+    if(!TOKEN){
+      setBox("#alert","Link inválido (sem token).","err");
+      return;
+    }
+
+    const trows = await sheetSearch(SHEETS.TOKENS,{ token:TOKEN });
+    if(!trows?.length) throw new Error("Token inválido ou expirado.");
+    const tokenRow = trows[0];
+
+    const disabled = String(tokenRow.disabled || "não").toLowerCase() === "sim";
+    const expired  = tokenRow.expires_at && (Date.parse(tokenRow.expires_at) < Date.now());
+    if(disabled || expired) throw new Error("Token desativado/expirado.");
+
+    CPF = onlyDigits(tokenRow.cpf || "");
+    if(!CPF) throw new Error("Token sem CPF vinculado.");
+
+    const prows = await sheetSearch(SHEETS.PATIENTS,{ cpf:CPF });
+    if(!prows?.length) throw new Error("Paciente não encontrado.");
+    patient = prows[0];
+
+    const allowed = String(patient[CODE] || "").toLowerCase() === "sim";
+    if(!allowed){
+      setBox("#alert","Formulário não liberado para este aluno.","err");
+      return;
+    }
+
+    const already = await sheetSearch(SHEETS.SCORES,{ cpf:CPF, code:CODE });
+    const flagDone = String(patient[`${CODE}_FEITO`] || "").toLowerCase() === "sim";
+    if(already?.length || flagDone){
+      setBox("#alert","Formulário já respondido. Voltando ao portal…","ok");
+      setTimeout(goPortalWithToken,1200);
+      return;
+    }
+
+    renderPatientInfo();
+    renderQuestions();
+    $("#pacInfo").style.display = "grid";
+    $("#form").style.display = "block";
+    hideBox("#alert");
+    startAt = Date.now();
+    restoreAutosave();
+  }catch(err){
+    console.error(err);
+    setBox("#alert", err.message || "Falha ao abrir o formulário.", "err");
+  }
+})();
+
+function renderPatientInfo(){
+  const g = $("#pacInfo");
+  g.innerHTML = "";
+  const info = [
+    ["Nome", patient.nome || "-"],
+    ["Nascimento", fmtDateISO(patient.data_nascimento)],
+  ];
+  for(const [k,v] of info){
+    const d = document.createElement("div");
+    d.className = "info";
+    d.innerHTML = `<b>${k}</b><div>${v || "-"}</div>`;
+    g.appendChild(d);
+  }
+}
+
+// ========= SUBMIT =========
+let sending = false;
+
+$("#form").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  if(sending) return;
+  sending = true;
+  hideBox("#msg");
+  const btn = $("#btnSubmit");
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Enviando…";
+
+  try{
+    const N = QUESTIONS.length;
+    const answers = {};
+    let firstMissing = null;
+
+    for(let i=1;i<=N;i++){
+      const qn = String(i).padStart(3,"0");
+      if(TEXT_ITEMS.has(i)){
+        const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
+        answers[i] = v; // pode ser vazio
+      }else{
+        const sel = document.querySelector(`input[name="q${qn}"]:checked`);
+        if(!sel && firstMissing === null) firstMissing = i;
+        if(sel) answers[i] = sel.value;
+      }
+    }
+
+    if(firstMissing){
+      setBox("#msg",`Responda o item ${firstMissing}.`,"warn");
+      document.getElementById(`lbl${String(firstMissing).padStart(3,"0")}`)
+        ?.scrollIntoView({behavior:"smooth",block:"center"});
+      sending = false;
+      btn.disabled = false;
+      btn.textContent = original;
+      return;
+    }
+
+    // checa duplicidade antes de gravar
+    const again = await sheetSearch(SHEETS.SCORES,{ cpf:CPF, code:CODE });
+    if(again && again.length){
+      setBox("#msg","Já existe uma resposta registrada. Voltando ao portal…","ok");
+      setTimeout(goPortalWithToken,1000);
+      return;
+    }
+
+    // monta string única para coluna "questions"
+    const questionsStr = QUESTIONS.map((txt,idx)=>{
+      const n = idx+1;
+      const ans = answers[n] ?? "";
+      return `${n}. ${txt} => ${ans}`;
+    }).join(" | ");
+
+    const durationSec = Math.round((Date.now() - startAt)/1000);
+
+    const row = {
+      result_id   : `${patient.cpf}_${CODE}_${Date.now()}`,
+      token       : qs("token"),
+      cpf         : patient.cpf,
+      code        : CODE,
+      source      : "professor",
+      submitted_at: new Date().toISOString(),
+      questions   : questionsStr,
+      metrics     : JSON.stringify({ answers, duration_sec: durationSec })
+    };
+
+    await sheetCreate(SHEETS.SCORES, row);
+
+    await sheetPatchBy(SHEETS.PATIENTS, "cpf", patient.cpf, {
+      [`${CODE}_FEITO`]: "sim",
+      [`${CODE}_FEITO_AT`]: new Date().toISOString()
+    });
+
+    clearAutosave();
+    setBox("#msg","Formulário enviado. Retornando ao portal…","ok");
+    setTimeout(goPortalWithToken,1200);
+
+  }catch(err){
+    console.error(err);
+    setBox("#msg", err.message || "Falha ao enviar. Tente novamente.", "err");
+    sending = false;
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+});
+</script>
+</body>
+</html>
