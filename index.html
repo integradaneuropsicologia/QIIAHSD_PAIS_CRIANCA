@@ -2,60 +2,212 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Questionário de Altas Habilidades/Superdotação – Pais</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Questionário para Identificação de Indicadores de Altas Habilidades e Superdotação para os pais</title>
 <style>
-:root{
-  --bg:#0f172a;--card:#111827;--line:#1f2937;
-  --text:#e5e7eb;--muted:#94a3b8;
-  --pri:#4f46e5;--ok:#22c55e;--err:#ef4444
+  /* TEMA CLARO (padrão) */
+  :root{
+    --bg:#f3f4f6;
+    --card:#ffffff;
+    --line:#d1d5db;
+    --text:#111827;
+    --muted:#6b7280;
+    --pri:#4f46e5;
+    --ok:#16a34a;
+    --err:#dc2626;
+
+    --info-bg:#f9fafb;
+    --q-bg:#f9fafb;
+    --field-bg:#ffffff;
+    --legend-bg:#eef2ff;
+
+    --okbox-bg:#ecfdf3;
+    --okbox-border:#bbf7d0;
+    --okbox-text:#166534;
+
+    --errbox-bg:#fef2f2;
+    --errbox-border:#fecaca;
+    --errbox-text:#7f1d1d;
+
+    --warnbox-bg:#fffbeb;
+    --warnbox-border:#facc15;
+    --warnbox-text:#78350f;
+  }
+
+  /* TEMA ESCURO */
+  :root[data-theme="dark"]{
+    --bg:#0f172a;
+    --card:#111827;
+    --line:#1f2937;
+    --text:#e5e7eb;
+    --muted:#94a3b8;
+    --pri:#4f46e5;
+    --ok:#22c55e;
+    --err:#ef4444;
+
+    --info-bg:#0b1220;
+    --q-bg:#0b1220;
+    --field-bg:#0a0f1c;
+    --legend-bg:#0b1220;
+
+    --okbox-bg:#052e1a;
+    --okbox-border:#114d2a;
+    --okbox-text:#b3f7c1;
+
+    --errbox-bg:#3b0d0d;
+    --errbox-border:#5b1919;
+    --errbox-text:#ffd0d0;
+
+    --warnbox-bg:#3a2903;
+    --warnbox-border:#5c4307;
+    --warnbox-text:#ffe6b0;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto
+  }
+  .wrap{max-width:1000px;margin:24px auto;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  h1{margin:0 0 6px;font-size:1.35rem}
+  .muted{color:var(--muted)}
+
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .grid-info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 6px}
+  @media(max-width:720px){.grid-info{grid-template-columns:1fr}}
+
+  .info{
+    background:var(--info-bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px
+  }
+  .info b{display:block;margin-bottom:4px}
+
+  .q{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px;
+    background:var(--q-bg);
+    margin-bottom:10px
+  }
+  .q h3{margin:0 0 8px;font-size:1rem}
+
+  textarea{
+    width:100%;
+    min-height:80px;
+    resize:vertical;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--field-bg);
+    color:var(--text);
+    padding:10px
+  }
+
+  input.field-input{
+  width:100%;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:var(--field-bg);
+  color:var(--text);
+  padding:8px 10px;
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto}
-.wrap{max-width:1000px;margin:24px auto;padding:0 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-h1{margin:0 0 6px;font-size:1.25rem}
-.muted{color:var(--muted)}
-.grid-info{display:grid;gap:10px;grid-template-columns:1fr 1fr;margin:14px 0}
-@media(max-width:720px){.grid-info{grid-template-columns:1fr}}
-.info{background:#0b1220;border:1px solid var(--line);border-radius:10px;padding:10px}
-.info b{display:block;color:#cbd5e1;margin-bottom:4px}
-.q{border:1px solid var(--line);border-radius:12px;background:#0b1220;padding:12px;margin-bottom:10px}
-.q h3{margin:0 0 6px;font-size:.95rem}
-.opts{display:flex;flex-wrap:wrap;gap:8px}
-label.opt{display:flex;align-items:center;gap:6px;background:#111827;border:1px solid #1f2937;border-radius:9px;padding:6px 10px;cursor:pointer}
-label.opt:has(input[type="radio"]:checked){background:var(--pri);border-color:var(--pri);color:#fff}
-label.opt span{color:inherit}
-label.opt:has(input[type="radio"]:checked) span{font-weight:600}
-label.opt input{accent-color:var(--pri)}
-input[type="text"],textarea{
-  width:100%;background:#0f172a;border:1px solid #1f2937;
-  border-radius:8px;padding:6px 8px;color:#fff
+
+/* o estilo do “pontinho” vale também para checkbox */
+.opt input[type="radio"],
+.opt input[type="checkbox"]{
+  accent-color:var(--pri);
 }
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--ok);border:none;border-radius:10px;
-  color:#fff;padding:10px 14px;cursor:pointer
+
+
+  .hint{font-size:.9rem;color:var(--muted);margin-bottom:8px}
+  .opts{display:flex;flex-wrap:wrap;gap:10px}
+  label.opt{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+  .opt input[type="radio"]{accent-color:var(--pri)}
+  label.opt:has(input[type="radio"]:checked){
+    background:var(--pri);
+    border-color:var(--pri);
+    color:#fff;
+  }
+  label.opt:has(input[type="radio"]:checked) span{
+    color:#fff;
+    font-weight:600;
+  }
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:var(--pri);
+    border:none;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.9rem;
+  }
+  .btn.ok{background:var(--ok)}
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+
+  /* botão de tema: estilo mais “neutro” */
+  .btn-toggle{
+    background:transparent;
+    color:var(--text);
+    border:1px solid var(--line);
+    padding:6px 10px;
+  }
+
+  .msg{margin:10px 0;padding:10px;border-radius:8px}
+  .okbox{background:var(--okbox-bg);border:1px solid var(--okbox-border);color:var(--okbox-text)}
+  .errbox{background:var(--errbox-bg);border:1px solid var(--errbox-border);color:var(--errbox-text)}
+  .warnbox{background:var(--warnbox-bg);border:1px solid var(--warnbox-border);color:var(--warnbox-text)}
+
+  .legend{
+    background:var(--legend-bg);
+    border:1px dashed var(--line);
+    border-radius:10px;
+    padding:10px;
+    margin:6px 0 12px
+  }
+
+  .q.missing{
+  border-color: var(--err);
+  box-shadow: 0 0 0 1px var(--err);
 }
-.btn:disabled{opacity:.6;cursor:not-allowed}
-.msg{margin:10px 0;padding:10px;border-radius:8px}
-.okbox{background:#052e1a;border:1px solid #114d2a;color:#b3f7c1}
-.errbox{background:#3b0d0d;border:1px solid #5b1919;color:#ffd0d0}
-.warnbox{background:#3a2903;border:1px solid #5c4307;color:#ffe6b0}
+
 </style>
+
 </head>
 <body>
 <div class="wrap">
-  <div class="card">
-    <h1>Questionário de Altas Habilidades/Superdotação – Pais</h1>
-    
+  <div class="header">
+  <h1>Questionário para Identificação de Indicadores de Altas Habilidades e Superdotação para os pais</h1>
+  <button id="themeToggle" type="button" class="btn btn-toggle">
+    Modo escuro
+  </button>
+</div>
 
+    
+    <!-- Dados do paciente (por token) -->
     <div id="pacInfo" class="grid-info" style="display:none;"></div>
 
-    <form id="form" style="display:none;">
+    <form id="form" style="margin-top:14px; display:none;">
       <div id="qs"></div>
-      <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-        <button id="btnSubmit" class="btn" type="submit">Enviar respostas</button>
+
+      <div class="legend muted">Dica: responda livremente; o rascunho é salvo automaticamente neste dispositivo.</div>
+
+      <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+        <button id="btnSubmit" class="btn ok" type="submit">Enviar formulário</button>
         <div id="progress" class="muted"></div>
       </div>
       <div id="msg" class="msg" style="display:none"></div>
@@ -66,462 +218,528 @@ input[type="text"],textarea{
 </div>
 
 <script>
-// ========= CONFIG GERAL =========
-const SHEETDB_BASE = "https://sheetdb.io/api/v1/8pmdh33s9fvy8";
-const SHEETS = {
-  PATIENTS: "Patients",
-  TOKENS: "LinkTokens",
-  SCORES: "Scores_QIIAHSD_PAIS_CRIANCA"
-};
-const CODE = "QIIAHSD_PAIS_CRIANCA";
-const PORTAL_URL = "https://integradaneuropsicologia.github.io/formularios/";
+// ======== CONFIG ========
+// ======== TEMA CLARO/ESCURO ========
+const THEME_KEY = "THEME_QIIAHSD_PAIS_CRIANCA";
 
-const $ = s => document.querySelector(s);
-const onlyDigits = s => (s || "").replace(/\D+/g,"");
-const qs = k => new URLSearchParams(location.search).get(k) || "";
-const AUTOSAVE_KEY = `${CODE}_${qs("token") || "no_token"}`;
+function applyTheme(theme){
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.setAttribute("data-theme","dark");
+  } else {
+    root.removeAttribute("data-theme"); // volta pro claro
+    theme = "light";
+  }
+  localStorage.setItem(THEME_KEY, theme);
 
-function setBox(id, text, kind="ok"){
-  const el = $(id); if(!el) return;
-  el.textContent = text;
-  el.className = "msg " + (kind==="ok" ? "okbox" : kind==="warn" ? "warnbox" : "errbox");
-  el.style.display = "block";
-}
-function hideBox(id){
-  const el = $(id);
-  if(el){ el.style.display="none"; el.textContent=""; }
-}
-function maskCPF(cpf){
-  const d = onlyDigits(cpf || "");
-  if(d.length !== 11) return cpf || "";
-  return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`;
-}
-function fmtDateISO(iso){
-  if(!iso) return "";
-  const [y,m,d] = iso.split("-");
-  return (y && m && d) ? `${d}/${m}/${y}` : iso;
-}
-
-async function GET(url){
-  const r = await fetch(url);
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  return r.json();
-}
-async function POST(url, body){
-  const r = await fetch(url,{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify(body)
-  });
-  if(!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-async function PATCH(url, body){
-  const r = await fetch(url,{
-    method:"PATCH",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify(body)
-  });
-  if(!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-async function sheetSearch(sheet, params){
-  const usp = new URLSearchParams(params);
-  return GET(`${SHEETDB_BASE}/search?sheet=${encodeURIComponent(sheet)}&${usp.toString()}`);
-}
-async function sheetCreate(sheet, row){
-  return POST(`${SHEETDB_BASE}?sheet=${encodeURIComponent(sheet)}`, { data:[row] });
-}
-async function sheetPatchBy(sheet, col, val, data){
-  return PATCH(
-    `${SHEETDB_BASE}/${encodeURIComponent(col)}/${encodeURIComponent(val)}?sheet=${encodeURIComponent(sheet)}`,
-    { data }
-  );
-}
-function goPortalWithToken(){
-  const TOKEN = qs("token");
-  try{
-    const u = new URL(PORTAL_URL, location.href);
-    u.searchParams.set("token", TOKEN);
-    location.href = u.toString();
-  }catch(_){
-    const sep = PORTAL_URL.includes("?") ? "&" : "?";
-    location.href = PORTAL_URL + sep + "token=" + encodeURIComponent(TOKEN);
+  const btn = document.getElementById("themeToggle");
+  if (btn) {
+    btn.textContent = (theme === "dark") ? "Modo claro" : "Modo escuro";
   }
 }
 
-// ========= LISTA DE PERGUNTAS (1–188) =========
-// Texto puro; a numeração é adicionada na renderização.
+// inicializa tema e listener do botão
+(function initTheme(){
+  const saved = localStorage.getItem(THEME_KEY) || "light";
+  applyTheme(saved);
+
+  const btn = document.getElementById("themeToggle");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
+  }
+})();
+
+
+
+const SHEETDB_BASE = "https://sheetdb.io/api/v1/8pmdh33s9fvy8";
+const SHEETS = { PATIENTS:"Patients", TOKENS:"LinkTokens", SCORES:"Scores_QIIAHSD_PAIS_CRIANCA" };
+const CODE = "QIIAHSD_PAIS_CRIANCA";
+const PORTAL_URL = "https://integradaneuropsicologia.github.io/formularios/";
+
+// ======== HELPERS ========
+const $ = s => document.querySelector(s);
+const onlyDigits = s => (s||"").replace(/\D+/g,"");
+const qs = k => new URLSearchParams(location.search).get(k) || "";
+const AUTOSAVE_KEY = `${CODE}_${qs("token")||"no_token"}`;
+
+function setBox(id, text, kind="ok"){ const el=$(id); if(!el) return;
+  el.textContent=text; el.className="msg "+(kind==="ok"?"okbox":kind==="warn"?"warnbox":"errbox"); el.style.display="block";
+}
+function hideBox(id){ const el=$(id); if(el){ el.style.display="none"; el.textContent=""; } }
+function maskCPF(cpf){ const d=onlyDigits(cpf||""); if(d.length!==11) return cpf||""; return `${d.slice(0,3)}.${d.slice(3,6)}.${d.slice(6,9)}-${d.slice(9)}`; }
+function fmtDateISO(iso){ if(!iso) return ""; const [y,m,d]=iso.split("-"); return (y&&m&&d)?`${d}/${m}/${y}`:iso; }
+async function GET(url){ const r=await fetch(url); if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }
+async function POST(url, body){ const r=await fetch(url,{method:"POST",headers:{ "Content-Type":"application/json" },body:JSON.stringify(body)}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+async function PATCH(url, body){ const r=await fetch(url,{method:"PATCH",headers:{ "Content-Type":"application/json" },body:JSON.stringify(body)}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+async function sheetSearch(sheet, params){ const usp=new URLSearchParams(params); return GET(`${SHEETDB_BASE}/search?sheet=${encodeURIComponent(sheet)}&${usp.toString()}`); }
+async function sheetCreate(sheet, row){ return POST(`${SHEETDB_BASE}?sheet=${encodeURIComponent(sheet)}`, { data:[row] }); }
+async function sheetPatchBy(sheet, column, value, data){ return PATCH(`${SHEETDB_BASE}/${encodeURIComponent(column)}/${encodeURIComponent(value)}?sheet=${encodeURIComponent(sheet)}`, { data }); }
+function goPortalWithToken(){ const TOKEN=qs("token"); try{ const u=new URL(PORTAL_URL,location.href); u.searchParams.set("token",TOKEN); location.href=u.toString(); }catch(_){ const sep=PORTAL_URL.includes("?")?"&":"?"; location.href=PORTAL_URL+sep+"token="+encodeURIComponent(TOKEN); }}
+
+// ======== PERGUNTAS ========
+// Escalas padrão
+const FREQ5   = ["Nunca","Raramente","Às vezes","Frequentemente","Quase sempre"];
+const SEVER4  = ["Não","Leve","Moderada","Grave"];
+const YESNO   = ["Sim","Não"];
+const YNP     = ["Sim","Não","Não sei"];
+const FREQ6   = ["Nunca","Raramente","Às vezes","Frequentemente","Quase sempre", "Não sei/Não se aplica"];
+
 const QUESTIONS = [
-  "Você percebe que seu filho(a) tem habilidades especiais e costuma se destacar de outras crianças?",
-  "Seu filho(a) parece distraído e “viaja” com frequência, mesmo durante conversas ou atividades simples?",
-  "Seu filho(a) é muito atento(a), curioso(a) e demonstra interesse por aprender coisas novas?",
-  "Seu filho(a) já aprendeu a ler?",
-  "Seu filho(a) costuma ler espontaneamente livros, revistas ou conteúdos de seu interesse?",
-  "Seu filho(a) já escreve com letra de forma (impressa)?",
-  "Seu filho(a) já escreve com letra cursiva (manuscrita)?",
-  "Seu filho(a) faz perguntas provocativas ou complexas, tentando entender coisas em profundidade?",
-  "Seu filho(a) prefere brincar sozinho(a) em vez de estar com outras crianças?",
-  "Seu filho(a) gosta de ler ou ver conteúdos mais difíceis do que o esperado para a idade?",
-  "Seu filho(a) costuma ser independente e faz as coisas sozinho(a)?",
-  "Seu filho(a) é brincalhão, tem bom humor e faz os outros rirem?",
-  "Seu filho(a) demonstra preocupação com assuntos “de adultos”, como injustiças, pobreza ou meio ambiente?",
-  "Seu filho(a) é perfeccionista e se cobra muito para fazer tudo certo?",
-  "Seu filho(a) observa detalhes que passam despercebidos pelos outros?",
-  "Seu filho(a) gosta de jogos de montar, quebra-cabeças, xadrez ou desafios de lógica?",
-  "Seu filho(a) tem memória excepcional, especialmente para temas que o interessam?",
-  "Seu filho(a) acumula muitas informações sobre os assuntos que gosta?",
-  "Seu filho(a) usa palavras difíceis ou tem vocabulário acima da média para a idade?",
-  "Seu filho(a) tenta entender assuntos complexos analisando cada parte com atenção?",
-  "Seu filho(a) aprende rapidamente o que o interessa e aplica o que aprendeu em outras situações?",
-  "Seu filho(a) percebe facilmente como as partes de algo se relacionam com o todo?",
-  "Seu filho(a) costuma entender mais de uma história, filme ou situação do que outras crianças da mesma idade?",
-  "Seu filho(a) faz perguntas inteligentes tentando descobrir o “como” e o “porquê” das coisas?",
-  "Seu filho(a) consegue se colocar no lugar dos outros, entendendo o que sentem?",
-  "Seu filho(a) aprende mais rápido que outras crianças?",
-  "Seu filho(a) se adapta facilmente a mudanças ou consegue transformar situações novas a seu favor?",
-  "Seu filho(a) lida bem com ideias abstratas e conceitos difíceis de entender?",
-  "As ideias de seu filho(a) costumam ser vistas como diferentes ou criativas pelos outros?",
-  "Seu filho(a) tem muitas ideias e soluções originais para os problemas?",
-  "Seu filho(a) gosta de correr riscos para conseguir algo que deseja?",
-  "Seu filho(a) gosta de desafios e de testar seus próprios limites?",
-  "Seu filho(a) é muito imaginativo e inventa histórias, brincadeiras ou soluções criativas?",
-  "Seu filho(a) é sensível às coisas bonitas, como músicas, paisagens ou obras de arte?",
-  "Seu filho(a) usa objetos ou materiais de maneiras diferentes das convencionais?",
-  "Seu filho(a) compreende e respeita opiniões diferentes das suas?",
-  "Seu filho(a) se irrita quando precisa repetir algo que já sabe fazer?",
-  "Seu filho(a) costuma encontrar formas diferentes e criativas de resolver problemas?",
-  "Seu filho(a) questiona o que os adultos dizem quando não concorda?",
-  "Seu filho(a) consegue manter a atenção mesmo em atividades que não são de seu interesse?",
-  "Seu filho(a) costuma dar um toque pessoal ou criativo ao que faz?",
-  "Seu filho(a) costuma respeitar regras e combinados?",
-  "Seu filho(a) dedica muito tempo e energia a atividades que realmente gosta?",
-  "Seu filho(a) é muito exigente consigo mesmo e raramente fica satisfeito com o que faz?",
-  "Seu filho(a) insiste em buscar soluções até conseguir resolver um problema?",
-  "Seu filho(a) tem sua própria forma de se organizar nas atividades e brinquedos?",
-  "Seu filho(a) é seguro(a) de suas opiniões e às vezes teimoso(a)?",
-  "Seu filho(a) precisa de muito incentivo para terminar atividades que gosta?",
-  "Seu filho(a) deixa de fazer outras coisas para se concentrar em algo que o interessa?",
-  "Seu filho(a) consegue prever dificuldades ou obstáculos antes de começar uma tarefa?",
-  "Seu filho(a) consegue estabelecer prioridades com facilidade?",
-  "Seu filho(a) costuma planejar o que vai fazer antes de começar?",
-  "Seu filho(a) é persistente e tenta concluir as tarefas que inicia?",
-  "Seu filho(a) é organizado e eficiente quando realiza algo que lhe interessa?",
-  "Seu filho(a) entende as consequências de suas ações?",
-  "Seu filho(a) é autossuficiente e gosta de fazer as coisas por conta própria?",
-  "Seu filho(a) costuma liderar ou influenciar outras crianças nas brincadeiras?",
-  "Seu filho(a) coopera e ajuda os outros com facilidade?",
-  "Seu filho(a) costuma organizar grupos ou brincadeiras?",
-  "Seu filho(a) se expressa bem e consegue convencer os outros com seus argumentos?",
-  "Seu filho(a) se destaca em algum esporte ou atividade física?",
-  "Seu filho(a) tem facilidade em esportes como futebol?",
-  "Seu filho(a) tem facilidade em ginástica ou acrobacias?",
-  "Seu filho(a) tem facilidade em artes marciais?",
-  "Seu filho(a) tem facilidade em natação?",
-  "Seu filho(a) tem facilidade em patinar ou andar de bicicleta?",
-  "Seu filho(a) demonstra talento em atividades artísticas?",
-  "Seu filho(a) desenha ou pinta muito bem?",
-  "Seu filho(a) gosta de modelar, esculpir ou criar objetos?",
-  "Seu filho(a) tem facilidade com música (tocar instrumentos, compor ou cantar)?",
-  "Seu filho(a) gosta de dançar e tem ritmo natural?",
-  "Seu filho(a) canta bem?",
-  "Seu filho(a) gosta de tirar fotos ou filmar cenas criativas?",
-  "Seu filho(a) gosta de teatro, representar personagens ou criar roteiros?",
-  "Seu filho(a) recita poesias, faz apresentações ou imita pessoas?",
-  "Seu filho(a) gosta de desenhar quadrinhos ou criar histórias ilustradas (como mangás)?",
-  "Seu filho(a) demonstra interesse por assuntos diferentes dos que atraem outras crianças?",
-  "Seu filho(a) tem senso de humor mais desenvolvido que o comum para a idade?",
-  "Seu filho(a) lê com entonação e interpretação, e/ou escreve com facilidade?",
-  "Seu filho(a) costuma levar em conta o ponto de vista dos outros?",
-  "Seu filho(a) prefere ficar sozinho(a) em vez de se misturar com outras crianças?",
-  "Seu filho(a) demonstra tédio ou desmotivação com atividades da escola?",
-  "Seu filho(a) demonstra talento lógico e matemático (números, estratégias, cálculos, jogos de lógica)?",
-  "Seu filho(a) demonstra talento em linguagem (leitura, escrita, contar histórias, aprender idiomas)?",
-  "Seu filho(a) demonstra facilidade para lidar com pessoas, ajudar colegas ou resolver conflitos?",
-  "Seu filho(a) se interessa por natureza, ciências, animais, planetas ou coleções?",
-  "Seu filho(a) gosta de atividades de movimento, como dançar, montar e desmontar objetos ou esportes?",
-  "Seu filho(a) demonstra boa consciência de si mesmo — entende o que sente e como reage às coisas?",
-  "Seu filho(a) gosta de construir coisas, montar quebra-cabeças, desenhar mapas ou brincar com labirintos?",
-  "Seu filho(a) tem sensibilidade musical — gosta de tocar, cantar ou inventar ritmos e melodias?",
-  "Seu filho(a) demonstra facilidade em alguma área específica do conhecimento?",
-  "Seu filho(a) se destaca em linguagem (português, leitura, escrita, idiomas)?",
-  "Seu filho(a) se destaca em ciências (física, biologia, química, experimentos)?",
-  "Seu filho(a) se destaca em matemática (raciocínio lógico, cálculos, números)?",
-  "Seu filho(a) demonstra interesse por história?",
-  "Seu filho(a) demonstra interesse por geografia (lugares, mapas, países)?",
-  "Seu filho(a) demonstra curiosidade por filosofia, perguntas existenciais ou temas abstratos?"
+  {section:"Avaliação da Criança", type:"input", text:"Nome do respondente"},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Você percebe que seu filho(a) tem habilidades especiais e se destaca das outras crianças?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) é distraído e parece “no mundo da lua” com frequência?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma ser atento, interessado e se destaca nas atividades que faz?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma escolher livros mais difíceis do que o esperado para a idade?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) demonstra independência e faz muitas coisas sozinho(a)?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se interessa por temas que normalmente preocupam adultos (violência, injustiça, política etc.)?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma observar mais detalhes do que outras crianças?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) prefere brincar com Legos, quebra-cabeças, xadrez ou jogos de estratégia?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) tem memória muito forte, especialmente para assuntos do interesse dele(a)?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma saber muitas informações sobre temas que gosta?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) usa palavras difíceis ou conhece mais vocabulário do que o esperado para a idade?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) aprende rapidamente coisas que lhe interessam e aplica esse conhecimento em outras situações?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) percebe facilmente como partes diferentes se conectam para formar um todo?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) aprende mais de filmes, histórias ou situações do que outras crianças da mesma idade?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma perguntar o “como” e o “porquê” das coisas?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) aprende mais rápido que outras crianças?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se adapta facilmente a novidades ou até propõe mudanças na situação?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) lida bem com ideias abstratas ou conceitos mais difíceis?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) tem muitas ideias diferentes, criativas ou incomuns para resolver problemas?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) gosta de correr riscos para conseguir algo que deseja?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) gosta de desafios e atividades complexas?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) é sensível a coisas bonitas, como música, arte ou natureza?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma usar materiais de maneiras diferentes e criativas?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) consegue entender ideias diferentes das próprias?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) questiona quando não concorda com algo que um adulto diz?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) consegue prestar atenção mesmo quando o assunto não é tão interessante?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) gosta de cumprir regras?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) é muito exigente consigo mesmo(a) e quase nunca fica satisfeito(a)?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma ter sua própria maneira de organizar as coisas?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) deixa outras atividades de lado para se aprofundar no que gosta?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma planejar antes de realizar algo?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) é persistente e gosta de concluir as tarefas que começa?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) entende bem as consequências das próprias ações?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Outras crianças costumam escolher seu filho(a) como líder?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se expressa bem e costuma convencer os outros com seus argumentos?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"input", text:"Seu filho(a) se destaca em algum esporte ou atividade física?"},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) tem habilidade especial em alguma área artística?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) demonstra interesse por assuntos muito diferentes dos de outras crianças?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) tem senso de humor acima da média para a idade?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) consegue considerar facilmente o ponto de vista de outras pessoas?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) costuma ser mais isolado do que as outras crianças?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) demonstra desmotivação ou tédio com frequência?", options:FREQ6},
+
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área lógico-matemática?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área linguística?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área interpessoal?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área naturalista?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área corporal-cinestésica?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área intrapessoal?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área espacial?", options:FREQ6},
+  {section:"Avaliação da Criança", type:"radio", text:"Seu filho(a) se destaca na área musical?", options:FREQ6}
 ];
 
-// Itens que são resposta aberta (não recebem Sim/Não obrigatório)
-const TEXT_ITEMS = new Set([]);
 
-// ========= RENDER =========
+
+const N = QUESTIONS.length;
+
+// ======== RENDER ========
 function renderQuestions(){
-  const host = $("#qs");
+  const host = $("#qs"); 
   host.innerHTML = "";
-  const N = QUESTIONS.length;
 
-  QUESTIONS.forEach((qtext, idx) => {
-    const n = idx + 1;
-    const qn = String(n).padStart(3,"0");
+  QUESTIONS.forEach((q, idx)=>{
+    const n  = idx+1;
+    const qn = String(n).padStart(2,"0");
     const wrap = document.createElement("div");
     wrap.className = "q";
-    wrap.setAttribute("role","group");
-    wrap.setAttribute("aria-labelledby",`lbl${qn}`);
 
-    wrap.innerHTML = `<h3 id="lbl${qn}">${n}. ${qtext}</h3>`;
-
-    if(TEXT_ITEMS.has(n)){
-      const inp = document.createElement("input");
-      inp.type = "text";
-      inp.name = `q${qn}`;
-      inp.placeholder = "Resposta aberta";
-      wrap.appendChild(inp);
-    }else{
-      const opts = document.createElement("div");
-      opts.className = "opts";
-      ["Sim","Não", "Não sei"].forEach((lab,i)=>{
+    if (typeof q === "string") {
+      // textarea “livre”
+      wrap.innerHTML = `
+        <h3 id="lbl${qn}">${n}. ${q}</h3>
+        <textarea name="q${qn}" id="q${qn}" placeholder="Escreva aqui..."></textarea>
+      `;
+    } else if (q.type === "radio" || q.type === "checkbox") {
+      // grupo de radios ou checkboxes
+      const opts = q.options || [];
+      let html = `<h3 id="lbl${qn}">${n}. ${q.text}</h3><div class="opts">`;
+      opts.forEach((opt, i)=>{
         const id = `q${qn}_${i}`;
-        const l = document.createElement("label");
-        l.className = "opt";
-        l.innerHTML =
-          `<input type="radio" name="q${qn}" id="${id}" value="${lab}" required>`+
-          `<span>${lab}</span>`;
-        opts.appendChild(l);
+        html += `
+          <label class="opt">
+            <input type="${q.type}" name="q${qn}" id="${id}" value="${opt}">
+            <span>${opt}</span>
+          </label>`;
       });
-      wrap.appendChild(opts);
+      html += `</div>`;
+      wrap.innerHTML = html;
+    } else if (q.type === "input") {
+      // campo de texto simples
+      wrap.innerHTML = `
+        <h3 id="lbl${qn}">${n}. ${q.text}</h3>
+        <input type="text" name="q${qn}" id="q${qn}" class="field-input" />
+      `;
+    } else {
+      // fallback, se aparecer algum tipo não tratado
+      wrap.innerHTML = `
+        <h3 id="lbl${qn}">${n}. ${q.text || q}</h3>
+        <textarea name="q${qn}" id="q${qn}" placeholder="Escreva aqui..."></textarea>
+      `;
     }
 
     host.appendChild(wrap);
   });
 
-  const updateProg = () => {
-    let answered = 0;
-    for(let i=1;i<=N;i++){
-      const qn = String(i).padStart(3,"0");
-      if(TEXT_ITEMS.has(i)){
-        const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
-        if(v.trim() !== "") answered++;
-      }else{
-        if(document.querySelector(`input[name="q${qn}"]:checked`)) answered++;
-      }
+  // autosize + progresso
+  host.addEventListener("input", e=>{
+    if(e.target.tagName==="TEXTAREA"){
+      e.target.style.height="auto";
+      e.target.style.height=(e.target.scrollHeight+2)+"px";
     }
-    $("#progress").textContent = `${answered}/${N} respondidas`;
-  };
+    updateProg(); 
+    autosaveAnswers();
+  });
+  host.addEventListener("change", ()=>{
+    updateProg(); 
+    autosaveAnswers();
+  });
 
-  host.addEventListener("input", () => { updateProg(); autosaveAnswers(); });
-  host.addEventListener("change", () => { updateProg(); autosaveAnswers(); });
   updateProg();
 }
 
-// ========= AUTOSAVE =========
-function autosaveAnswers(){
-  const stored = {};
-  const N = QUESTIONS.length;
-  for(let i=1;i<=N;i++){
-    const qn = String(i).padStart(3,"0");
-    if(TEXT_ITEMS.has(i)){
-      const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
-      if(v !== "") stored[i] = v;
-    }else{
-      const sel = document.querySelector(`input[name="q${qn}"]:checked`);
-      if(sel) stored[i] = sel.value;
+
+function updateProg(){
+  let filled = 0;
+
+  QUESTIONS.forEach((q, idx)=>{
+    const qn = `q${String(idx+1).padStart(2,"0")}`;
+
+    if (typeof q === "string") {
+      const el = $("#"+qn);
+      if (el && el.value.trim()) filled++;
+
+    } else if (q.type === "radio" || q.type === "checkbox") {
+      const any = document.querySelectorAll(`input[name="${qn}"]:checked`).length > 0;
+      if (any) filled++;
+
+    } else if (q.type === "input") {
+      const el = $("#"+qn);
+      if (el && el.value.trim()) filled++;
     }
-  }
-  localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(stored));
+  });
+
+  $("#progress").textContent = `${filled}/${N} respondidas`;
 }
+
+// ======== AUTOSAVE ========
+function autosaveAnswers(){
+  const answers  = {};
+  const qaPairs  = [];
+  let answeredCount = 0;
+
+  QUESTIONS.forEach((q, idx)=>{
+    const n  = idx+1;
+    const qn = `q${String(n).padStart(2,"0")}`;
+    const label = (typeof q === "string") ? q : (q.text || `Pergunta ${n}`);
+
+    if (typeof q === "string") {
+      // textarea
+      const el  = $("#"+qn);
+      const val = (el?.value || "").trim();
+      answers[qn] = val;
+      if (val) answeredCount++;
+      qaPairs.push(`${n}. ${label}: ${val ? val.replace(/\s+/g," ").trim() : "(sem resposta)"}`);
+
+    } else if (q.type === "radio") {
+      // radio -> uma opção (mas guardo como array pra manter padrão)
+      const vals = Array.from(document.querySelectorAll(`input[name="${qn}"]:checked`)).map(el=>el.value);
+      answers[qn] = vals;
+      if (vals.length) answeredCount++;
+      qaPairs.push(`${n}. ${label}: ${vals.length ? vals.join(", ") : "(nenhuma opção marcada)"}`);
+
+    } else if (q.type === "checkbox") {
+      // checkboxes -> várias opções
+      const vals = Array.from(document.querySelectorAll(`input[name="${qn}"]:checked`)).map(el=>el.value);
+      answers[qn] = vals;
+      if (vals.length) answeredCount++;
+      qaPairs.push(`${n}. ${label}: ${vals.length ? vals.join(", ") : "(nenhuma opção marcada)"}`);
+
+    } else if (q.type === "input") {
+      // input de texto simples
+      const el  = $("#"+qn);
+      const val = (el?.value || "").trim();
+      answers[qn] = val;
+      if (val) answeredCount++;
+      qaPairs.push(`${n}. ${label}: ${val ? val.replace(/\s+/g," ").trim() : "(sem resposta)"}`);
+    }
+  });
+
+  const categoria = qaPairs.join(" | ");
+
+  localStorage.setItem(
+    AUTOSAVE_KEY,
+    JSON.stringify({ code: CODE, token: qs("token"), answers })
+  );
+}
+
+
 function restoreAutosave(){
   try{
-    const raw = localStorage.getItem(AUTOSAVE_KEY);
+    const raw = localStorage.getItem(AUTOSAVE_KEY); 
     if(!raw) return;
-    const data = JSON.parse(raw) || {};
-    Object.entries(data).forEach(([k,v])=>{
-      const n = Number(k);
-      const qn = String(n).padStart(3,"0");
-      if(TEXT_ITEMS.has(n)){
-        const inp = document.querySelector(`input[name="q${qn}"]`);
-        if(inp) inp.value = v;
-      }else{
-        const el = document.querySelector(`input[name="q${qn}"][value="${v}"]`);
-        if(el) el.checked = true;
+
+    const {answers} = JSON.parse(raw) || {}; 
+    if(!answers) return;
+
+    Object.entries(answers).forEach(([key,val])=>{
+      if (Array.isArray(val)) {
+        // vale tanto pra radio quanto pra checkbox
+        val.forEach(v=>{
+          const el = document.querySelector(`input[name="${key}"][value="${v}"]`);
+          if (el) el.checked = true;
+        });
+      } else {
+        // textarea OU input
+        const el = document.getElementById(key);
+        if (el) {
+          el.value = val;
+          if (el.tagName === "TEXTAREA") {
+            el.style.height = "auto";
+            el.style.height = (el.scrollHeight+2)+"px";
+          }
+        }
       }
     });
 
-    const N = QUESTIONS.length;
-    let answered = 0;
-    for(let i=1;i<=N;i++){
-      const qn = String(i).padStart(3,"0");
-      if(TEXT_ITEMS.has(i)){
-        const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
-        if(v.trim() !== "") answered++;
-      }else if(document.querySelector(`input[name="q${qn}"]:checked`)){
-        answered++;
-      }
-    }
-    $("#progress").textContent = `${answered}/${N} respondidas`;
+    updateProg();
   }catch(_){}
 }
-function clearAutosave(){
-  localStorage.removeItem(AUTOSAVE_KEY);
-}
 
-// ========= PACIENTE / TOKEN =========
-let patient = null;
-let CPF = "";
+function clearAutosave(){ localStorage.removeItem(AUTOSAVE_KEY); }
+
+// ======== ESTADO ========
+let patient=null, tokenRow=null, CPF="";
 let startAt = Date.now();
 
+// ======== BOOT POR TOKEN ========
 (async function boot(){
   try{
-    const TOKEN = qs("token");
-    if(!TOKEN){
-      setBox("#alert","Link inválido (sem token).","err");
-      return;
-    }
+    const TOKEN=qs("token");
+    if(!TOKEN){ setBox("#alert","Link inválido (sem token). Solicite um novo link.","err"); return; }
 
-    const trows = await sheetSearch(SHEETS.TOKENS,{ token:TOKEN });
+    const trows=await sheetSearch(SHEETS.TOKENS,{ token:TOKEN });
     if(!trows?.length) throw new Error("Token inválido ou expirado.");
-    const tokenRow = trows[0];
+    tokenRow=trows[0];
+    const disabled=String(tokenRow.disabled||"não").toLowerCase()==="sim";
+    const expired = tokenRow.expires_at && (Date.parse(tokenRow.expires_at) < Date.now());
+    if(disabled || expired) throw new Error("Token desativado/expirado. Peça um novo link.");
 
-    const disabled = String(tokenRow.disabled || "não").toLowerCase() === "sim";
-    const expired  = tokenRow.expires_at && (Date.parse(tokenRow.expires_at) < Date.now());
-    if(disabled || expired) throw new Error("Token desativado/expirado.");
+    CPF=onlyDigits(tokenRow.cpf||""); if(!CPF) throw new Error("Token sem CPF vinculado.");
 
-    CPF = onlyDigits(tokenRow.cpf || "");
-    if(!CPF) throw new Error("Token sem CPF vinculado.");
-
-    const prows = await sheetSearch(SHEETS.PATIENTS,{ cpf:CPF });
+    const prows=await sheetSearch(SHEETS.PATIENTS,{ cpf:CPF });
     if(!prows?.length) throw new Error("Paciente não encontrado.");
-    patient = prows[0];
+    patient=prows[0];
 
-    const allowed = String(patient[CODE] || "").toLowerCase() === "sim";
-    if(!allowed){
-      setBox("#alert","Formulário não liberado para este aluno.","err");
-      return;
-    }
+    const allowed=String(patient[CODE]||"").toLowerCase()==="sim";
+    if(!allowed){ setBox("#alert","Este formulário não está liberado para você. Entre em contato com o consultório.","err"); return; }
 
-    const already = await sheetSearch(SHEETS.SCORES,{ cpf:CPF, code:CODE });
-    const flagDone = String(patient[`${CODE}_FEITO`] || "").toLowerCase() === "sim";
-    if(already?.length || flagDone){
-      setBox("#alert","Formulário já respondido. Voltando ao portal…","ok");
-      setTimeout(goPortalWithToken,1200);
-      return;
+    const flagDone=String(patient[`${CODE}_FEITO`]||"").toLowerCase()==="sim";
+    const already=await sheetSearch(SHEETS.SCORES,{ cpf:CPF, code:CODE });
+    if(flagDone || (already && already.length)){
+      setBox("#alert","Você já respondeu este formulário. Voltando ao portal…","ok");
+      setTimeout(goPortalWithToken,1200); return;
     }
 
     renderPatientInfo();
     renderQuestions();
-    $("#pacInfo").style.display = "grid";
-    $("#form").style.display = "block";
+    $("#pacInfo").style.display="grid";
+    $("#form").style.display="block";
     hideBox("#alert");
-    startAt = Date.now();
+    startAt=Date.now();
     restoreAutosave();
+
   }catch(err){
     console.error(err);
-    setBox("#alert", err.message || "Falha ao abrir o formulário.", "err");
+    setBox("#alert", err.message || "Falha ao abrir o formulário. Tente novamente mais tarde.", "err");
   }
 })();
 
 function renderPatientInfo(){
-  const g = $("#pacInfo");
-  g.innerHTML = "";
-  const info = [
-    ["Nome", patient.nome || "-"],
-    ["Nascimento", fmtDateISO(patient.data_nascimento)],
-  ];
+  const g=$("#pacInfo"); g.innerHTML="";
+  const info=[["Nome",patient.nome||"-"],["CPF",maskCPF(patient.cpf)],["Nascimento",fmtDateISO(patient.data_nascimento)],["E-mail",patient.email||"-"],["WhatsApp",patient.whatsapp||"-"]];
   for(const [k,v] of info){
-    const d = document.createElement("div");
-    d.className = "info";
-    d.innerHTML = `<b>${k}</b><div>${v || "-"}</div>`;
+    const d=document.createElement("div"); d.className="info";
+    d.innerHTML=`<b>${k}</b><div>${v||"-"}</div>`;
     g.appendChild(d);
   }
 }
 
-// ========= SUBMIT =========
-let sending = false;
-
+// ======== SUBMIT ========
+let sending=false;
 $("#form").addEventListener("submit", async (e)=>{
   e.preventDefault();
-  if(sending) return;
-  sending = true;
+  if(sending) return; 
+  sending=true; 
   hideBox("#msg");
-  const btn = $("#btnSubmit");
-  const original = btn.textContent;
-  btn.disabled = true;
-  btn.textContent = "Enviando…";
+  const btn=$("#btnSubmit"); 
+  const originalText=btn.textContent; 
+  btn.disabled=true; 
+  btn.textContent="Enviando…";
 
   try{
-    const N = QUESTIONS.length;
-    const answers = {};
-    let firstMissing = null;
+    if(!patient) throw new Error("Sessão inválida. Recarregue o link.");
 
-    for(let i=1;i<=N;i++){
-      const qn = String(i).padStart(3,"0");
-      if(TEXT_ITEMS.has(i)){
-        const v = document.querySelector(`input[name="q${qn}"]`)?.value || "";
-        answers[i] = v; // pode ser vazio
-      }else{
-        const sel = document.querySelector(`input[name="q${qn}"]:checked`);
-        if(!sel && firstMissing === null) firstMissing = i;
-        if(sel) answers[i] = sel.value;
+    const answers = {};
+    const qaPairs = [];
+    let answeredCount = 0;
+
+    for (let i=1; i<=N; i++){
+      const q   = QUESTIONS[i-1];
+      const qn  = `q${String(i).padStart(2,"0")}`;
+      const label = (typeof q === "string") ? q : (q.text || `Pergunta ${i}`);
+
+      if (typeof q === "string"){
+        const el  = document.getElementById(qn);
+        const val = (el?.value || "").trim();
+        answers[qn] = val;
+        if (val) answeredCount++;
+        qaPairs.push(`${i}. ${label}: ${val ? val.replace(/\s+/g," ").trim() : "(sem resposta)"}`);
+
+      } else if (q.type === "radio"){
+        const checked = Array.from(document.querySelectorAll(`input[name="${qn}"]:checked`)).map(el=>el.value);
+        answers[qn] = checked;
+        if (checked.length) answeredCount++;
+        qaPairs.push(`${i}. ${label}: ${checked.length ? checked.join(", ") : "(nenhuma opção marcada)"}`);
+
+      } else if (q.type === "checkbox"){
+        const checked = Array.from(document.querySelectorAll(`input[name="${qn}"]:checked`)).map(el=>el.value);
+        answers[qn] = checked;
+        if (checked.length) answeredCount++;
+        qaPairs.push(`${i}. ${label}: ${checked.length ? checked.join(", ") : "(nenhuma opção marcada)"}`);
+
+      } else if (q.type === "input"){
+        const el  = document.getElementById(qn);
+        const val = (el?.value || "").trim();
+        answers[qn] = val;
+        if (val) answeredCount++;
+        qaPairs.push(`${i}. ${label}: ${val ? val.replace(/\s+/g," ").trim() : "(sem resposta)"}`);
+
+      } else {
+        qaPairs.push(`${i}. ${label}: (tipo não suportado)`);
       }
     }
 
-    if(firstMissing){
-      setBox("#msg",`Responda o item ${firstMissing}.`,"warn");
-      document.getElementById(`lbl${String(firstMissing).padStart(3,"0")}`)
-        ?.scrollIntoView({behavior:"smooth",block:"center"});
+    // 🔴 AQUI ENTRA A TRAVA DE FORMULÁRIO INCOMPLETO
+    if (answeredCount < N) {
       sending = false;
       btn.disabled = false;
-      btn.textContent = original;
+      btn.textContent = originalText;
+
+      document.querySelectorAll(".q.missing").forEach(el => el.classList.remove("missing"));
+
+      let firstMissingEl = null;
+
+      QUESTIONS.forEach((q, idx) => {
+        const n  = idx + 1;
+        const qn = `q${String(n).padStart(2,"0")}`;
+        let empty = false;
+
+        if (typeof q === "string" || q.type === "input") {
+          const el = document.getElementById(qn);
+          empty = !el || !el.value.trim();
+          if (empty && !firstMissingEl && el) {
+            firstMissingEl = el.closest(".q") || el;
+          }
+        } else if (q.type === "radio" || q.type === "checkbox") {
+          const hasChecked = document.querySelectorAll(`input[name="${qn}"]:checked`).length > 0;
+          empty = !hasChecked;
+          if (empty && !firstMissingEl) {
+            const anyInput = document.querySelector(`input[name="${qn}"]`);
+            if (anyInput) {
+              firstMissingEl = anyInput.closest(".q") || anyInput;
+            }
+          }
+        }
+
+        if (empty) {
+          const labelEl = document.getElementById(`lbl${String(n).padStart(2,"0")}`);
+          const box = labelEl ? labelEl.closest(".q") : null;
+          if (box) box.classList.add("missing");
+        }
+      });
+
+      if (firstMissingEl) {
+        firstMissingEl.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      setBox(
+        "#msg",
+        `Você deixou ${N - answeredCount} questão(ões) sem responder. Complete todas antes de enviar.`,
+        "err"
+      );
       return;
     }
 
-    // checa duplicidade antes de gravar
+    // daqui pra baixo continua igual: anti-duplicidade, gravação, PATCH, etc.
     const again = await sheetSearch(SHEETS.SCORES,{ cpf:CPF, code:CODE });
-    if(again && again.length){
-      setBox("#msg","Já existe uma resposta registrada. Voltando ao portal…","ok");
+    if (again && again.length){
+      setBox("#msg","Este formulário já foi enviado anteriormente. Voltando ao portal…","ok");
       setTimeout(goPortalWithToken,1000);
       return;
     }
 
-    // monta string única para coluna "questions"
-    const questionsStr = QUESTIONS.map((txt,idx)=>{
-      const n = idx+1;
-      const ans = answers[n] ?? "";
-      return `${n}. ${txt} => ${ans}`;
-    }).join(" | ");
-
-    const durationSec = Math.round((Date.now() - startAt)/1000);
+    const categoria = qaPairs.join(" | ");
+    const durationSec = Math.round((Date.now()-startAt)/1000);
 
     const row = {
-      result_id   : `${patient.cpf}_${CODE}_${Date.now()}`,
-      token       : qs("token"),
-      cpf         : patient.cpf,
-      code        : CODE,
-      source      : "professor",
+      result_id: `${patient.cpf}_${CODE}_${Date.now()}`,
+      token: qs("token"),
+      cpf: patient.cpf,
+      code: CODE,
+      source: "segunda fonte",
       submitted_at: new Date().toISOString(),
-      questions   : questionsStr,
-      metrics     : JSON.stringify({ answers, duration_sec: durationSec })
+      total: answeredCount,
+      categoria,
+      metrics: JSON.stringify({
+        questions: QUESTIONS,
+        answers,
+        answeredCount,
+        duration_sec: durationSec
+      })
     };
 
     await sheetCreate(SHEETS.SCORES, row);
-
     await sheetPatchBy(SHEETS.PATIENTS, "cpf", patient.cpf, {
       [`${CODE}_FEITO`]: "sim",
       [`${CODE}_FEITO_AT`]: new Date().toISOString()
     });
 
     clearAutosave();
-    setBox("#msg","Formulário enviado. Retornando ao portal…","ok");
-    setTimeout(goPortalWithToken,1200);
+    setBox("#msg","Anamnese enviada. Retornando ao portal…","ok");
+    setTimeout(goPortalWithToken, 1300);
 
-  }catch(err){
+  } catch(err){
     console.error(err);
     setBox("#msg", err.message || "Falha ao enviar. Tente novamente.", "err");
-    sending = false;
-    btn.disabled = false;
-    btn.textContent = original;
+    sending=false; 
+    btn.disabled=false; 
+    btn.textContent=originalText;
   }
 });
+
+
 </script>
 </body>
 </html>
